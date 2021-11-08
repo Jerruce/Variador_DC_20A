@@ -15,5 +15,6 @@
 /* Global variables declaration */
 extern volatile uint8_t system_flags;
 extern volatile uint8_t trigger_pulse_state;
+extern volatile uint8_t cycle_indicator;
 
 #endif /* GLOBAL_H_ */

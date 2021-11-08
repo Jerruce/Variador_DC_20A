@@ -100,7 +100,7 @@ void Timer1_Configurar(Timer_16b_t *timer_param){
     ICR1 =  timer_param->ICR;
 	/* Configurar la fuente de reloj del temporizador */
 	TCCR1B |= (timer_param->clock) & 0x07;
-	/* Configurar el modo de operaci?n del temporizador */
+	/* Configurar el modo de operacion del temporizador */
 	TCCR1B |= ((timer_param->mode >> 2) << WGM12) & ((1 << WGM12) | (1 << WGM13));
 	TCCR1A |= (timer_param->mode) & 0x03;
 	/* Configurar las salida por comparaci?n OC0A */

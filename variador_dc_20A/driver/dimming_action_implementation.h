@@ -15,7 +15,8 @@
 void Timer1_Initialize(void);
 void External_Interrupt_Initialize(void);
 void Trigger_Implementation_Initialize(void);
-void Trigger_Pulse_State_Machine(void);
+void Pos_Trigger_Pulse_State_Machine(void);
+void Neg_Trigger_Pulse_State_Machine(void);
 void Set_Trigger_Phase_Binary(uint8_t percent_x2);
 uint16_t Get_Trigger_Phase_Binary(void);
 

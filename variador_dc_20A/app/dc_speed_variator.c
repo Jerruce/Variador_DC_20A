@@ -30,6 +30,7 @@ float dc_current_sense_feedback_value_ma = 0.0;
 
 float raw_power_percentage = 0;
 
+volatile uint8_t cycle_indicator = POSITIVE_CYCLE;
 
 /* Function definition */
 

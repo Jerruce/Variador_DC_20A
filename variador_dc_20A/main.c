@@ -71,20 +71,50 @@ ISR(TIMER0_COMPA_vect){
 
 ISR(TIMER1_COMPA_vect){
 	trigger_pulse_state = GENERATE_TRIGGER_PULSE;
-	Trigger_Pulse_State_Machine();
+	
+	if(cycle_indicator == POSITIVE_CYCLE){
+		Pos_Trigger_Pulse_State_Machine();
+	}else{
+		Neg_Trigger_Pulse_State_Machine();
+	}
 }
 
 ISR(TIMER1_CAPT_vect){
 	trigger_pulse_state = WAIT_FOR_PULSE_COMPLETE;
-	Trigger_Pulse_State_Machine();
+	
+	if(cycle_indicator == POSITIVE_CYCLE){
+		Pos_Trigger_Pulse_State_Machine();
+	}else{
+		Neg_Trigger_Pulse_State_Machine();
+	}
+	
 }
 
 
 ISR(INT0_vect){
+	
+	cycle_indicator = POSITIVE_CYCLE;
+	
+	/* Disable INT1 (negative synchronous signal) interrupt */
+	EIMSK &= ~(1 << INT1);
+	/* Force negative trigger output to LOW */
+	PORT_TRIGGER_PULSE_NEG &= ~(1 << TRIGGER_PULSE_NEG);
+	TCCR1A &= ~((1 << COM1B1) | (1 << COM1B0));
+		
 	trigger_pulse_state = WAIT_FOR_PHASE;
-	Trigger_Pulse_State_Machine();
+	Pos_Trigger_Pulse_State_Machine();
 }
 
+ISR(INT1_vect){
 
+	cycle_indicator = NEGATIVE_CYCLE;
 
-
+	/* Disable INT0 (positive synchronous signal) interrupt */
+	EIMSK &= ~(1 << INT0);
+	/* Force positive trigger output to LOW */
+	PORT_TRIGGER_PULSE_POS &= ~(1 << TRIGGER_PULSE_POS);
+	TCCR1A &= ~((1 << COM1A1) | (1 << COM1A0));
+	
+	trigger_pulse_state = WAIT_FOR_PHASE;
+	Neg_Trigger_Pulse_State_Machine();
+}

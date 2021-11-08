@@ -32,16 +32,25 @@
 
 // --------- Pin definition for pulse output-------------- 
 
-#define DDR_TRIGGER_PULSE		DDRB
-#define PORT_TRIGGER_PULSE		PORTB
-#define TRIGGER_PULSE			1
+#define DDR_TRIGGER_PULSE_POS		DDRB
+#define PORT_TRIGGER_PULSE_POS		PORTB
+#define TRIGGER_PULSE_POS			1
+
+#define DDR_TRIGGER_PULSE_NEG		DDRB
+#define PORT_TRIGGER_PULSE_NEG		PORTB
+#define TRIGGER_PULSE_NEG			2
 
 // --------- Pin definition for Zero Cross Detector -------
 
-#define DDR_ZCD_SYNC				DDRD
-#define PIN_ZCD_SYNC				PIND
-#define PORT_ZCD_SYNC				PORTD
-#define ZCD_SYNC					2
+#define DDR_ZCD_SYNC_POS				DDRD
+#define PIN_ZCD_SYNC_POS				PIND
+#define PORT_ZCD_SYNC_POS				PORTD
+#define ZCD_SYNC_POS					2
+
+#define DDR_ZCD_SYNC_NEG				DDRD
+#define PIN_ZCD_SYNC_NEG				PIND
+#define PORT_ZCD_SYNC_NEG				PORTD
+#define ZCD_SYNC_NEG					3
 
 // -------- Pin definition for ENABLE jumper -------------
 
@@ -138,5 +147,7 @@
 #define CURRENT_LIMIT_INPUT_FULL_SCALE_MA			(CURRENT_LIMIT_INPUT_MAX_VALUE_MA - CURRENT_LIMIT_INPUT_MIN_VALUE_MA)
 #define SPAN_INPUT_FULL_SCALE						(SPAN_INPUT_MAX_VALUE - SPAN_INPUT_MIN_VALUE)
 
+#define POSITIVE_CYCLE								0
+#define NEGATIVE_CYCLE								1
 
 #endif /* PROJECT_DEFINES_H_ */
