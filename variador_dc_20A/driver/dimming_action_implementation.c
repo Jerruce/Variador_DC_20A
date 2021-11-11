@@ -143,11 +143,9 @@ void Pos_Trigger_Pulse_State_Machine(void){
 			/* Clear the interrupt flag */
 			TIFR1 |= (1 << OCF1A);			
 			/* Configure Timer1 in PWM Mode */
-			TCCR1A |= ~(1 << WGM10);
+			TCCR1A &= ~(1 << WGM10);
 			TCCR1A |= (1<< WGM11);
 			TCCR1B |= (1 << WGM12) | (1 << WGM13);
-			/* Force trigger output to HIGH */
-			PORT_TRIGGER_PULSE_POS |= (1 << TRIGGER_PULSE_POS);
 			TCCR1A &= ~(1 << COM1A0);
 			TCCR1A |= (1 << COM1A1);
 			/* Disable Timer1 Compare A interrupt */
@@ -174,8 +172,8 @@ void Pos_Trigger_Pulse_State_Machine(void){
 				/* Reset the counter */
 				TCNT1 = 0;
 				/* Force trigger output to LOW */
-				TCCR1A &= ~((1 << COM1A1) | (1 << COM1A0));
 				PORT_TRIGGER_PULSE_POS &= ~(1 << TRIGGER_PULSE_POS);
+				TCCR1A &= ~((1 << COM1A1) | (1 << COM1A0));
 				/* Configure Timer1 in CTC COMPA Mode */
 				TCCR1A &= ~((1 << WGM10) | (1<< WGM11));
 				TCCR1B &= ~(1 << WGM13);
@@ -188,7 +186,6 @@ void Pos_Trigger_Pulse_State_Machine(void){
 				trigger_pulse_state = WAIT_FOR_ZCD;
 				/* Enable INT1 (negative synchronous signal) interrupt */
 				EIMSK |= (1 << INT1);
-				
 			}
 		
 		break;
@@ -271,11 +268,9 @@ void Neg_Trigger_Pulse_State_Machine(void){
 			/* Clear the interrupt flag */
 			TIFR1 |= (1 << OCF1A);
 			/* Configure Timer1 in PWM Mode */
-			TCCR1A |= ~(1 << WGM10);
+			TCCR1A &= ~(1 << WGM10);
 			TCCR1A |= (1<< WGM11);
 			TCCR1B |= (1 << WGM12) | (1 << WGM13);
-			/* Force trigger output to HIGH */
-			PORT_TRIGGER_PULSE_NEG |= (1 << TRIGGER_PULSE_NEG);
 			TCCR1A &= ~(1 << COM1B0);
 			TCCR1A |= (1 << COM1B1);
 			/* Disable Timer1 Compare A interrupt */
@@ -302,8 +297,8 @@ void Neg_Trigger_Pulse_State_Machine(void){
 			/* Reset the counter */
 			TCNT1 = 0;
 			/* Force trigger output to LOW */
-			TCCR1A &= ~((1 << COM1B1) | (1 << COM1B0));
 			PORT_TRIGGER_PULSE_NEG &= ~(1 << TRIGGER_PULSE_NEG);
+			TCCR1A &= ~((1 << COM1B1) | (1 << COM1B0));
 			/* Configure Timer1 in CTC COMPA Mode */
 			TCCR1A &= ~((1 << WGM10) | (1<< WGM11));
 			TCCR1B &= ~(1 << WGM13);
