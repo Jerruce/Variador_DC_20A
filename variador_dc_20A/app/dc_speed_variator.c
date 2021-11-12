@@ -209,10 +209,13 @@ void Inputs_Read(void){
 	/* Calculate desired limit current value (from 1000 mA to 15000 mA) */
 	current_limit_control_value_ma = CURRENT_LIMIT_INPUT_MIN_VALUE_MA + ((current_limit_control_adc_value * CURRENT_LIMIT_INPUT_FULL_SCALE_MA) / 1023.0);
 	
-	raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
-	//Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
-	//filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
-	filtered_speed_setpoint_rpm = raw_speed_setpoint_rpm; 
+	if(PIN_POWER_ENABLE & (1 << POWER_ENABLE)){
+		raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
+	}else{
+		raw_speed_setpoint_rpm = 0;
+	}	
+	Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
+	filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
 
 	if(filtered_speed_setpoint_rpm > SPEED_SETPOINT_MAX_VALUE){
 		filtered_speed_setpoint_rpm = SPEED_SETPOINT_MAX_VALUE;
@@ -255,7 +258,6 @@ void Update_Variator_Outputs(void){
 		PORT_RUN_LED |= (1 << RUN_LED);
 	}else{
 		PORT_RUN_LED &= ~(1 << RUN_LED);
-		raw_power_percentage = 0.0;
 	}
 	
 	//Apply_LPF_Power_Percent_Control(raw_power_percentage);

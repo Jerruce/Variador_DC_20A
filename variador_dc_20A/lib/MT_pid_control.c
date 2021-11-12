@@ -131,7 +131,7 @@ double PID_Controller_02(double pid_setpoint, double pid_feedback, uint8_t pid_r
 			//Does nothing
 		}
 	    	    
-	    pid_output = (kp_01 * p_comp) + (ki_01 * i_comp) + (kd_01 * d_comp);
+	    pid_output = (kp_02 * p_comp) + (ki_02 * i_comp) + (kd_02 * d_comp);
 	    
 	    if(pid_output > PID_02_MAX_OUTPUT){
 		    pid_output = PID_02_MAX_OUTPUT;
