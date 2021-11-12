@@ -156,7 +156,7 @@ void Speed_Feedback_Measure(void){
 	speed_sense_feedback_adc_value = ADC;	
 	/* Calculate measured speed (in RPM) */
 	speed_sensor_volt = (speed_sense_feedback_adc_value * 5.0) / 1023.0;
-	speed_sense_feedback_value_rpm = speed_sensor_volt / 0.06;
+	speed_sense_feedback_value_rpm = speed_sensor_volt / 0.0667;
 	
 }
 
@@ -210,8 +210,9 @@ void Inputs_Read(void){
 	current_limit_control_value_ma = CURRENT_LIMIT_INPUT_MIN_VALUE_MA + ((current_limit_control_adc_value * CURRENT_LIMIT_INPUT_FULL_SCALE_MA) / 1023.0);
 	
 	raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
-	Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
-	filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
+	//Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
+	//filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
+	filtered_speed_setpoint_rpm = raw_speed_setpoint_rpm; 
 
 	if(filtered_speed_setpoint_rpm > SPEED_SETPOINT_MAX_VALUE){
 		filtered_speed_setpoint_rpm = SPEED_SETPOINT_MAX_VALUE;
