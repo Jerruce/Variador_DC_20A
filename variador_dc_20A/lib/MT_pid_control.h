@@ -25,6 +25,8 @@
 
 void PID_01_Set_Parameters(double my_kp, double my_ki, double my_kd);
 double PID_Controller_01(double pid_setpoint, double pid_feedback, uint8_t pid_reset);
+void PID_02_Set_Parameters(double my_kp, double my_ki, double my_kd);
+double PID_Controller_02(double pid_setpoint, double pid_feedback, uint8_t pid_reset);
 void PID_Controllers_Initialize(void);
 
 #endif /* MT_PID_CONTROL_H_ */

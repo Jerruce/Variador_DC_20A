@@ -29,6 +29,7 @@ void System_Initialize(void);
 
 void Inputs_Read(void);
 void Current_Feedback_Measure(void);
+void Speed_Feedback_Measure(void);
 void Update_Variator_Outputs(void);
 
 #endif /* DC_SPEED_VARIATOR_H_ */

@@ -20,6 +20,7 @@ uint16_t offset_control_adc_value = 0;
 uint16_t span_control_adc_value = 0;
 uint16_t current_limit_control_adc_value = 0;
 uint16_t current_sense_feedback_adc_value = 0;
+uint16_t speed_sense_feedback_adc_value = 0;
 
 float speed_adj_control_percent_value = 0.0;
 float offset_control_value = 0.0;
@@ -27,8 +28,11 @@ float span_control_value = 0.0;
 float current_limit_control_value_ma = 0.0;
 float current_sense_feedback_value_ma = 0.0;
 float dc_current_sense_feedback_value_ma = 0.0;
-
 float raw_power_percentage = 0;
+float raw_speed_setpoint_rpm = 0;
+float filtered_speed_setpoint_rpm = 0;
+
+float speed_sense_feedback_value_rpm = 0.0;
 
 volatile uint8_t cycle_indicator = POSITIVE_CYCLE;
 
@@ -138,9 +142,27 @@ void Current_Feedback_Measure(void){
 	
 }
 
-
+void Speed_Feedback_Measure(void){
+	
+	float speed_sensor_volt;
+	
+	/* Measure the analog input */
+	ADC_Seleccionar_Canal(SPEED_SENSE_ADC_CHANNEL);
+	/* Llevar a cabo una conversión */
+	ADCSRA |= (1 << ADSC);
+	while(!(ADCSRA & (1 << ADIF)));
+	/* Limpiar la bandera de conversión completa */
+	ADCSRA |= (1 << ADIF);
+	speed_sense_feedback_adc_value = ADC;	
+	/* Calculate measured speed (in RPM) */
+	speed_sensor_volt = (speed_sense_feedback_adc_value * 5.0) / 1023.0;
+	speed_sense_feedback_value_rpm = speed_sensor_volt / 0.06;
+	
+}
 
 void Inputs_Read(void){
+	
+	int16_t regulated_speed = 0.0;
 	
 	/* Measure the analog inputs (potentiometers) */
 	
@@ -152,7 +174,6 @@ void Inputs_Read(void){
 	ADCSRA |= (1 << ADIF);
 	speed_adj_control_adc_value = ADC;
 	
-	
 	ADC_Seleccionar_Canal(OFFSET_CONTROL_ADC_CHANNEL);
 	/* Llevar a cabo una conversión */
 	ADCSRA |= (1 << ADSC);
@@ -160,7 +181,6 @@ void Inputs_Read(void){
 	/* Limpiar la bandera de conversión completa */
 	ADCSRA |= (1 << ADIF);
 	offset_control_adc_value = ADC;
-	
 	
 	ADC_Seleccionar_Canal(SPAN_CONTROL_ADC_CHANNEL);
 	/* Llevar a cabo una conversión */
@@ -170,7 +190,6 @@ void Inputs_Read(void){
 	ADCSRA |= (1 << ADIF);
 	span_control_adc_value = ADC;
 	
-	
 	ADC_Seleccionar_Canal(CURRENT_LIMIT_CONTROL_ADC_CHANNEL);
 	/* Llevar a cabo una conversión */
 	ADCSRA |= (1 << ADSC);
@@ -179,8 +198,10 @@ void Inputs_Read(void){
 	ADCSRA |= (1 << ADIF);
 	current_limit_control_adc_value = ADC;
 	
+    Speed_Feedback_Measure();
+	
 	/* Calculate desired speed in percentage (0% to 100% --> expressed from 0 to 200) */
-	speed_adj_control_percent_value = (speed_adj_control_adc_value * DIMMING_ACTION_MAX_VALUE) / 1023.0;
+	speed_adj_control_percent_value = (speed_adj_control_adc_value * SPEED_SETPOINT_MAX_VALUE) / 1023.0;
 	/* Calculate desired offset in percentage (Considering 220VAC input) */
 	offset_control_value = (offset_control_adc_value * OFFSET_VOLTAGE_INPUT_MAX_VALUE_PERCENT_X2) / 1023.0;
 	/* Calculate desired span in gain (from 0.75 to 1.25) */
@@ -188,12 +209,26 @@ void Inputs_Read(void){
 	/* Calculate desired limit current value (from 1000 mA to 15000 mA) */
 	current_limit_control_value_ma = CURRENT_LIMIT_INPUT_MIN_VALUE_MA + ((current_limit_control_adc_value * CURRENT_LIMIT_INPUT_FULL_SCALE_MA) / 1023.0);
 	
-	raw_power_percentage = offset_control_value + (speed_adj_control_percent_value * span_control_value);
+	raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
+	Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
+	filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
+
+	if(filtered_speed_setpoint_rpm > SPEED_SETPOINT_MAX_VALUE){
+		filtered_speed_setpoint_rpm = SPEED_SETPOINT_MAX_VALUE;
+	}else if(filtered_speed_setpoint_rpm < SPEED_SETPOINT_MIN_VALUE){
+		filtered_speed_setpoint_rpm = SPEED_SETPOINT_MIN_VALUE;
+	}else{
+		// Does nothing
+	}
+	
+	regulated_speed = (int16_t)PID_Controller_02(filtered_speed_setpoint_rpm, speed_sense_feedback_value_rpm, 0);
+
+	raw_power_percentage = offset_control_value + regulated_speed;
 	
 	if(raw_power_percentage > DIMMING_ACTION_MAX_VALUE){
 		raw_power_percentage = DIMMING_ACTION_MAX_VALUE;
-	}else if(raw_power_percentage < DIMMING_ACTION_MIN_VALUE){
-		raw_power_percentage = DIMMING_ACTION_MIN_VALUE;
+	}else if(raw_power_percentage < offset_control_value){
+		raw_power_percentage = offset_control_value;
 	}else{
 		// Does nothing
 	}
@@ -203,7 +238,7 @@ void Inputs_Read(void){
 
 void Update_Variator_Outputs(void){	
 	
-	int16_t filtered_power_percentage = 0;
+	//int16_t filtered_power_percentage = 0;
 	int16_t current_compensation = 0;
 	int16_t total_output = 0;
 	
@@ -222,12 +257,14 @@ void Update_Variator_Outputs(void){
 		raw_power_percentage = 0.0;
 	}
 	
-	Apply_LPF_Power_Percent_Control(raw_power_percentage);
-	filtered_power_percentage = (int16_t)Get_LPF_Power_Percent_Control();
+	//Apply_LPF_Power_Percent_Control(raw_power_percentage);
+	//filtered_power_percentage = (int16_t)Get_LPF_Power_Percent_Control();
 	
-	current_compensation = (int16_t)PID_Controller_01(current_limit_control_value_ma, dc_current_sense_feedback_value_ma, 0);
+	//current_compensation = (int16_t)PID_Controller_01(current_limit_control_value_ma, dc_current_sense_feedback_value_ma, 0);
 	
-	total_output = filtered_power_percentage + current_compensation;
+	//total_output = filtered_power_percentage + current_compensation;
+	total_output = raw_power_percentage;
+	
 	if(total_output < ((int16_t)DIMMING_ACTION_MIN_VALUE)){
 		total_output = (int16_t)DIMMING_ACTION_MIN_VALUE;
 	}else if(total_output > ((int16_t)DIMMING_ACTION_MAX_VALUE)){

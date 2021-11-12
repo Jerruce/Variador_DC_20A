@@ -41,11 +41,14 @@ void Filters_Initialize(void);
 float RC_LPF_Power_Percent_Control(float raw_value, uint8_t restart);
 float RC_LPF_Current_Sense_Feedback(float raw_value, uint8_t restart);
 float Cheby2_LPF_Current_Sense_Feedback(float raw_value, uint8_t restart);
+float RC_LPF_Speed_Control(float raw_value, uint8_t restart);
 
 void Apply_LPF_Power_Percent_Control(float new_power_output);
 void Apply_LPF_Current_Sense_Feedback(float new_current_feedback);
+void Apply_LPF_Speed_Control(float new_speed_input);
 
 float Get_LPF_Power_Percent_Control(void);
 float Get_LPF_Current_Sense_Feedback(void);
+float Get_LPF_Speed_Control(void);
 
 #endif

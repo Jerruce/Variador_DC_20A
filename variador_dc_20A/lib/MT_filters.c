@@ -7,6 +7,7 @@
 /* Global variables */
 static float power_percent_lpf_output = 0.0;
 static float current_sense_feedback_lpf_output = 0.0;
+static float speed_control_lpf_output = 0.0;
 
 
 /* Function definition */
@@ -105,6 +106,31 @@ float Cheby2_LPF_Current_Sense_Feedback(float raw_value, uint8_t restart){
 }
 
 
+float RC_LPF_Speed_Control(float raw_value, uint8_t restart){
+	
+	static float lpf_prev_out = 0.0;
+	float lpf_out, sample_period_sec, div;
+	
+	if(restart){
+		
+		lpf_prev_out = 0.0;
+		lpf_out = 0.0;
+		
+	}else{
+		
+		sample_period_sec = 0.001 * ((float)SPEED_CONTROL_SAMPLE_PERIOD_MS);
+		div = sample_period_sec + SPEED_CONTROL_LPF_RC_CONSTANT_S;
+		
+		lpf_out = (raw_value * (sample_period_sec / div)) +  (lpf_prev_out * (SPEED_CONTROL_LPF_RC_CONSTANT_S / div));
+		lpf_prev_out = lpf_out;
+		
+	}
+	
+	return lpf_out;	
+	
+}
+
+
 
 void Apply_LPF_Power_Percent_Control(float new_power_output){
 	power_percent_lpf_output = RC_LPF_Power_Percent_Control(new_power_output, 0);
@@ -116,6 +142,10 @@ void Apply_LPF_Current_Sense_Feedback(float new_current_feedback){
 	current_sense_feedback_lpf_output = RC_LPF_Current_Sense_Feedback(new_current_feedback, 0);
 }
 
+void Apply_LPF_Speed_Control(float new_speed_input){
+	speed_control_lpf_output = RC_LPF_Speed_Control(new_speed_input, 0);
+}
+
 
 float Get_LPF_Power_Percent_Control(void){
 	return  power_percent_lpf_output;
@@ -124,4 +154,8 @@ float Get_LPF_Power_Percent_Control(void){
 
 float Get_LPF_Current_Sense_Feedback(void){
 	return  current_sense_feedback_lpf_output;
+}
+
+float Get_LPF_Speed_Control(void){
+	return speed_control_lpf_output;
 }
