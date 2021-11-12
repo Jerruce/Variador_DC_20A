@@ -228,7 +228,12 @@ void Inputs_Read(void){
 		// Does nothing
 	}
 	
-	regulated_speed = (int16_t)PID_Controller_02(filtered_speed_setpoint_rpm, speed_sense_feedback_value_rpm, 0);
+	if(PIN_POWER_ENABLE & (1 << POWER_ENABLE)){
+		regulated_speed = (int16_t)PID_Controller_02(filtered_speed_setpoint_rpm, speed_sense_feedback_value_rpm, 0);	
+	}else{
+		regulated_speed = (int16_t)PID_Controller_02(0.0, 0.0, 1);
+	}
+	
 
 	raw_power_percentage = offset_control_value + regulated_speed;
 	
