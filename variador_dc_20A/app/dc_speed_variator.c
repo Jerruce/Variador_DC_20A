@@ -212,6 +212,7 @@ void Inputs_Read(void){
 	if(PIN_POWER_ENABLE & (1 << POWER_ENABLE)){
 		raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
 	}else{
+		offset_control_value = 0;
 		raw_speed_setpoint_rpm = 0;
 	}	
 	Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
