@@ -211,13 +211,15 @@ void Inputs_Read(void){
 	
 	if(PIN_POWER_ENABLE & (1 << POWER_ENABLE)){
 		raw_speed_setpoint_rpm = speed_adj_control_percent_value * span_control_value;
+		Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
+		filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
 	}else{
 		offset_control_value = 0;
 		raw_speed_setpoint_rpm = 0;
+		RC_LPF_Speed_Control(0.0, 1);
+		filtered_speed_setpoint_rpm = raw_speed_setpoint_rpm;
 	}	
-	Apply_LPF_Speed_Control(raw_speed_setpoint_rpm);
-	filtered_speed_setpoint_rpm = Get_LPF_Speed_Control();
-
+	
 	if(filtered_speed_setpoint_rpm > SPEED_SETPOINT_MAX_VALUE){
 		filtered_speed_setpoint_rpm = SPEED_SETPOINT_MAX_VALUE;
 	}else if(filtered_speed_setpoint_rpm < SPEED_SETPOINT_MIN_VALUE){
