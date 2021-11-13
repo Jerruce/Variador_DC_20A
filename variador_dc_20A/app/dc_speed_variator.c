@@ -248,10 +248,8 @@ void Inputs_Read(void){
 
 void Update_Variator_Outputs(void){	
 	
-	//int16_t filtered_power_percentage = 0;
-	int16_t current_compensation = 0;
+	float current_compensation_factor = 1.0;
 	int16_t total_output = 0;
-	
 	
 	if(dc_current_sense_feedback_value_ma >= current_limit_control_value_ma){
 		PORT_OVERCURRENT_LED |= (1 << OVERCURRENT_LED);
@@ -265,14 +263,10 @@ void Update_Variator_Outputs(void){
 	}else{
 		PORT_RUN_LED &= ~(1 << RUN_LED);
 	}
-	
-	//Apply_LPF_Power_Percent_Control(raw_power_percentage);
-	//filtered_power_percentage = (int16_t)Get_LPF_Power_Percent_Control();
-	
-	//current_compensation = (int16_t)PID_Controller_01(current_limit_control_value_ma, dc_current_sense_feedback_value_ma, 0);
-	
-	//total_output = filtered_power_percentage + current_compensation;
-	total_output = raw_power_percentage;
+		
+	current_compensation_factor = PID_Controller_01(current_limit_control_value_ma, dc_current_sense_feedback_value_ma, 0);
+	current_compensation_factor = (200.0 + current_compensation_factor) / 200.0; 
+	total_output = raw_power_percentage * current_compensation_factor;
 	
 	if(total_output < ((int16_t)DIMMING_ACTION_MIN_VALUE)){
 		total_output = (int16_t)DIMMING_ACTION_MIN_VALUE;
