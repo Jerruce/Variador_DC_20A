@@ -136,7 +136,7 @@ void Current_Feedback_Measure(void){
 	
 	/* Calculate measured DC current (in miliAmperes) */
 	current_sensor_volt = (current_sense_feedback_adc_value * 5.0) / 1023.0;
-	current_sense_feedback_value_ma = (current_sensor_volt - 2.5) * 17001; // Sensitivity of the sensor: 58.82 mV/A
+	current_sense_feedback_value_ma = (current_sensor_volt - 2.5) * CURRENT_SENSOR_FACTOR_MAMP_PER_VOLT	; 
 	Apply_LPF_Current_Sense_Feedback(current_sense_feedback_value_ma);
 	dc_current_sense_feedback_value_ma = Get_LPF_Current_Sense_Feedback();
 	
@@ -156,7 +156,7 @@ void Speed_Feedback_Measure(void){
 	speed_sense_feedback_adc_value = ADC;	
 	/* Calculate measured speed (in RPM) */
 	speed_sensor_volt = (speed_sense_feedback_adc_value * 5.0) / 1023.0;
-	speed_sense_feedback_value_rpm = speed_sensor_volt * 666.66;
+	speed_sense_feedback_value_rpm = speed_sensor_volt * SPEED_SENSOR_FACTOR_RPM_PER_VOLT;
 	
 }
 

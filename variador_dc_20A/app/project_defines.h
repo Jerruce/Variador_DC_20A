@@ -78,6 +78,14 @@
 
 #define CONTROL_INPUTS_SAMPLE_PERIOD_MS					10
 
+// ---------------------- Defines for the sensors ---------------------------
+
+#define SPEED_SENSOR_SENSITIVITY_VOLT_PER_RPM			0.0015						
+#define SPEED_SENSOR_FACTOR_RPM_PER_VOLT				(1.0/SPEED_SENSOR_SENSITIVITY_VOLT_PER_RPM)
+
+#define CURRENT_SENSOR_SENSITIVITY_MVOLT_PER_AMP		58.82
+#define CURRENT_SENSOR_FACTOR_MAMP_PER_VOLT				(1000000/CURRENT_SENSOR_SENSITIVITY_MVOLT_PER_AMP)
+
 // --------------------- Defines for low-pass filters ------------------------
 
 #define POWER_PERCENT_CONTROL_LPF_FC_HZ					1.0
