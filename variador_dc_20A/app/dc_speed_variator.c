@@ -136,7 +136,7 @@ void Current_Feedback_Measure(void){
 	
 	/* Calculate measured DC current (in miliAmperes) */
 	current_sensor_volt = (current_sense_feedback_adc_value * 5.0) / 1023.0;
-	current_sense_feedback_value_ma = (current_sensor_volt - 2.5) * 10000;
+	current_sense_feedback_value_ma = (current_sensor_volt - 2.5) * 17001; // Sensitivity of the sensor: 58.82 mV/A
 	Apply_LPF_Current_Sense_Feedback(current_sense_feedback_value_ma);
 	dc_current_sense_feedback_value_ma = Get_LPF_Current_Sense_Feedback();
 	
@@ -156,7 +156,7 @@ void Speed_Feedback_Measure(void){
 	speed_sense_feedback_adc_value = ADC;	
 	/* Calculate measured speed (in RPM) */
 	speed_sensor_volt = (speed_sense_feedback_adc_value * 5.0) / 1023.0;
-	speed_sense_feedback_value_rpm = speed_sensor_volt / 0.0667;
+	speed_sense_feedback_value_rpm = speed_sensor_volt * 666.66;
 	
 }
 
@@ -234,7 +234,6 @@ void Inputs_Read(void){
 		regulated_speed = (int16_t)PID_Controller_02(0.0, 0.0, 1);
 	}
 	
-
 	raw_power_percentage = offset_control_value + regulated_speed;
 	
 	if(raw_power_percentage > DIMMING_ACTION_MAX_VALUE){
@@ -244,7 +243,6 @@ void Inputs_Read(void){
 	}else{
 		// Does nothing
 	}
-	
 }
 
 

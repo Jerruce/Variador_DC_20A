@@ -114,8 +114,8 @@
 #define KI1_BY_DEFAULT							1.0
 #define KD1_BY_DEFAULT							0.0
 
-#define KP2_BY_DEFAULT							10.0
-#define KI2_BY_DEFAULT							15.0
+#define KP2_BY_DEFAULT							0.108
+#define KI2_BY_DEFAULT							0.0
 #define KD2_BY_DEFAULT							0.0
 
 #define I1_COMPONENT_POSITIVE_LIMIT				10.0
@@ -126,6 +126,15 @@
 
 #define CURRENT_LIMITER_PERIOD_10MS				5
 
+// -------------- Defines for PID controller ----------------
+
+#define FUZZY_CONTROLLER_01_SAMPLE_PERIOD_MS		CONTROL_INPUTS_SAMPLE_PERIOD_MS
+#define FUZZY_CONTROLLER_01_MAX_OUTPUT				DIMMING_ACTION_MAX_VALUE
+#define FUZZY_CONTROLLER_01_MIN_OUTPUT				0.0
+
+#define GE1_BY_DEFAULT								1.0
+#define GCE1_BY_DEFAULT								0.0
+#define GCU1_BY_DEFAULT								1.0
 
 // -------------------- Defines for the trigger pulse -------------------------
 
